@@ -15,6 +15,9 @@ env = gym.make("FrozenLake8x8-v1")
 
 gamma = 0.95
 
+
+#epsilon greedy policy that depends on a specific Q and epsilon
+#returns a lambda : (state-> list of actions and their prob)
 def createEpsilonGreedyPolicy(Q, epsilon, num_actions):
 
     def policyFunction(state):
@@ -85,6 +88,7 @@ def qLearningAlgo(env, num_episodes, gamma ,
             # calculate policy
             if(iter%10000 == 0):
                 sim_env = copy.deepcopy(env)
+                #TO DO- policy value is the mean of "n" simulations
                 policy_val = eval_policy(env,Q,policy)
                 improve_stats[iter] = policy_val
             # done is True if episode terminated   
@@ -102,8 +106,13 @@ def eval_policy(env_1,Q,policy):
         best_action = np.argmax(Q[state])
         next_state, reward, done, _ = env.step(best_action)
         discounter_reward += reward
-        
-
+#TO DO - save stats for simulation print -
+        if done:
+            break
+        if (t>300):
+            break
+#TO DO- return stats to print and reward           
+    return 0
 
 def main():
     Q_eps_095_apha_1,stats_1 = qLearningAlgo(env,250,gamma,1,0.995)
