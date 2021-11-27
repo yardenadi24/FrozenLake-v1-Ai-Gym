@@ -82,7 +82,7 @@ def qLearningAlgo(env, num_episodes, gamma, alpha, epsilon, lamda, n, et):
                 improve_stats[0].append(iter)
                 improve_stats[1].append(policy_val)
                 if policy_val>0:
-                    epsilon = epsilon * 0.9
+                    epsilon = epsilon * 0.8
             # done is True if episode terminated   
             if done or t>350:
                 iter += 1
@@ -110,10 +110,12 @@ def eval_policy(env_1,Q,n):
 def simulate(env_1, Q):
     state = env_1.reset()
     discounter_reward = 0
+    discount = 1
     for _ in itertools.count():
         best_action = np.argmax(Q[state])
         next_state, reward, done, _ = env_1.step(best_action)
-        discounter_reward += reward
+        discounter_reward += reward*discount
+        discount = discount*gamma
 
         state = next_state
         if done:
@@ -147,8 +149,8 @@ def print_simulate(env_1, Q):
 def make_Graph(stats1,stats2,stats3,stats4):
     plt.plot(stats1[0],stats1[1], label="alpha: 0.1, lambda: 0.1")
     plt.plot(stats2[0],stats2[1], label="alpha: 0.1, lambda: 0.2")
-    plt.plot(stats3[0],stats3[1], label="alpha: 0.2, lambda: 0.1")
-    plt.plot(stats4[0],stats4[1], label="alpha: 0.2, lambda: 0.2")
+    plt.plot(stats3[0],stats3[1], label="alpha: 0.055, lambda: 0.4")
+    plt.plot(stats4[0],stats4[1], label="alpha: 0.055, lambda: 0.5")
 
     plt.title("value per step")
     plt.ylabel("value")
@@ -171,11 +173,11 @@ def Compare_EG(stats1,stats2):
 def main():
     Q1, stats1 = qLearningAlgo(env, 100000, gamma, 0.1, 0.995, 0.1, 250, True)
     Q2, stats2 = qLearningAlgo(env, 100000, gamma, 0.1, 0.995, 0.2, 250, True)
-    Q3, stats3 = qLearningAlgo(env, 100000, gamma, 0.2, 0.995, 0.1, 250, True)
-    Q4, stats4 = qLearningAlgo(env, 100000, gamma, 0.2, 0.995, 0.2, 250, True)
+    Q3, stats3 = qLearningAlgo(env, 100000, gamma, 0.055, 0.995, 0.4, 250, True)
+    Q4, stats4 = qLearningAlgo(env, 100000, gamma, 0.055, 0.995, 0.5, 250, True)
     make_Graph(stats1, stats2, stats3, stats4)
-    Q5, stats5 = qLearningAlgo(env, 100000, gamma, 0.1, 0.995, 0.2, 250, False)
-    Compare_EG(stats2, stats5)
+    Q5, stats5 = qLearningAlgo(env, 100000, gamma, 0.055, 0.995, 0.4, 250, False)
+    Compare_EG(stats4, stats5)
     print_simulate(env, Q2)
     return 0
 
